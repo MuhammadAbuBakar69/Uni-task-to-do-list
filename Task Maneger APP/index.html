@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <style>
+  
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Arial', sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        color: #333;
+    }
+
+    .container {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 450px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .container:hover {
+        transform: scale(1.03);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+        font-weight: 700;
+        font-size: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 600;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: box-shadow 0.3s, border 0.3s;
+    }
+
+    input:focus {
+        box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+        border-color: #667eea;
+        outline: none;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    button:not(:last-child) {
+        margin-bottom: 15px; /* Adds space between buttons */
+    }
+
+    button:hover {
+        background: linear-gradient(135deg, #764ba2, #667eea);
+        transform: scale(1.05);
+    }
+
+    .toggle-form {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 15px;
+    }
+
+    .toggle-form a {
+        color: #764ba2;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s, text-shadow 0.3s;
+    }
+
+    .toggle-form a:hover {
+        color: #333;
+        text-shadow: 0 0 5px rgba(118, 75, 162, 0.5);
+    }
+
+    .error {
+        color: #d9534f;
+        font-size: 14px;
+        margin-top: 5px;
+        font-weight: bold;
+    }
+
+    .task-list {
+        margin-top: 20px;
+    }
+
+    .task-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: #f5f7fa;
+        margin-bottom: 12px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .task-item:hover {
+        background: #e4e9f1;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .task-item button {
+        width: auto;
+        padding: 6px 14px;
+        margin-left: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+
+    .task-item button:hover {
+        background: linear-gradient(135deg, #764ba2, #667eea);
+    }
+
+    .completed {
+        text-decoration: line-through;
+        opacity: 0.6;
+        color: #999;
+    }
+
+    #welcomeMessage {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+        font-weight: bold;
+        font-size: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+</style>
+</head>
+ <body>
+    <div class="container" id="loginForm">
+        <h2>Login</h2>
+        <form id="loginFormElement">
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="loginEmail" required>
+                <div class="error" id="loginEmailError"></div>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="loginPassword" required>
+                <div class="error" id="loginPasswordError"></div>
+            </div>
+            <button type="submit">Login</button>
+            <div class="toggle-form">
+                Don't have an account? <a onclick="toggleForms('signup')">Sign Up</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="container" id="signupForm" style="display: none;">
+        <h2>Sign Up</h2>
+        <form id="signupFormElement">
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" id="signupName" required>
+                <div class="error" id="signupNameError"></div>
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="signupEmail" required>
+                <div class="error" id="signupEmailError"></div>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="signupPassword" required>
+                <div class="error" id="signupPasswordError"></div>
+            </div>
+            <button type="submit">Sign Up</button>
+            <div class="toggle-form">
+                Already have an account? <a onclick="toggleForms('login')">Login</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="container" id="taskManager" style="display: none;">
+        <div id="welcomeMessage"></div>
+        <div class="form-group">
+            <label>Add New Task:</label>
+            <input type="text" id="newTask" placeholder="Enter task...">
+            <button onclick="addTask()">Add Task</button>
+        </div>
+        <div class="task-list" id="taskList"></div>
+        <div class="form-group">
+            <button onclick="filterTasks('all')">All</button>
+            <button onclick="filterTasks('active')">Active</button>
+            <button onclick="filterTasks('completed')">Completed</button>
+            <button onclick="clearCompletedTasks()">Clear Completed</button>
+        </div>
+        <button onclick="logout()" style="margin-top: 20px; background: #dc3545;">Logout</button>
+    </div>
+
+    <script>
+        // Initialize storage if needed
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify([]));
+        }
+
+        function toggleForms(form) {
+            document.getElementById('loginForm').style.display = form === 'login' ? 'block' : 'none';
+            document.getElementById('signupForm').style.display = form === 'signup' ? 'block' : 'none';
+            document.getElementById('taskManager').style.display = form === 'tasks' ? 'block' : 'none';
+        }
+
+        // Handle signup
+        document.getElementById('signupFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            const users = JSON.parse(localStorage.getItem('users'));
+            
+            // Check if user already exists
+            if (users.find(user => user.email === email)) {
+                document.getElementById('signupEmailError').textContent = 'Email already registered';
+                return;
+            }
+
+            // Add new user
+            users.push({ name, email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem(`tasks_${email}`, JSON.stringify([]));
+
+            // Clear form and show login
+            document.getElementById('signupFormElement').reset();
+            toggleForms('login');
+        });
+
+        // Handle login
+        document.getElementById('loginFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const users = JSON.parse(localStorage.getItem('users'));
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${user.name}!`;
+                document.getElementById('loginFormElement').reset();
+                toggleForms('tasks');
+                loadTasks();
+            } else {
+                document.getElementById('loginEmailError').textContent = 'Invalid email or password';
+            }
+        });
+
+        // Add task
+        function addTask() {
+            const taskInput = document.getElementById('newTask');
+            const taskText = taskInput.value.trim();
+            
+            if (taskText) {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                const tasks = JSON.parse(localStorage.getItem(`tasks_${currentUser.email}`)) || [];
+                
+                tasks.push({
+                    id: Date.now(),
+                    text: taskText,
+                    completed: false
+                });
+                
+                localStorage.setItem(`tasks_${currentUser.email}`, JSON.stringify(tasks));
+                taskInput.value = '';
+                loadTasks();
+            }
+        }
+
+        // Load tasks
+        function loadTasks(filter = 'all') {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const tasks = JSON.parse(localStorage.getItem(`tasks_${currentUser.email}`)) || [];
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+
+            tasks.forEach(task => {
+                if (filter === 'all' || (filter === 'active' && !task.completed) || (filter === 'completed' && task.completed)) {
+                    const div = document.createElement('div');
+                    div.className = `task-item ${task.completed ? 'completed' : ''}`;
+                    div.innerHTML = `
+                        <span>${task.text}</span>
+                        <div>
+                            <button onclick="toggleTask(${task.id})" style="background: ${task.completed ? '#28a745' : '#ffc107'}">
+                                ${task.completed ? 'Undo' : 'Complete'}
+                            </button>
+                            <button onclick="deleteTask(${task.id})" style="background: #dc3545">Delete</button>
+                        </div>
+                    `;
+                    taskList.appendChild(div);
+                }
+            });
+        }
+
+        // Toggle task completion
+        function toggleTask(id) {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const tasks = JSON.parse(localStorage.getItem(`tasks_${currentUser.email}`));
+            
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                localStorage.setItem(`tasks_${currentUser.email}`, JSON.stringify(tasks));
+                loadTasks();
+            }
+        }
+
+        // Delete task
+        function deleteTask(id) {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            let tasks = JSON.parse(localStorage.getItem(`tasks_${currentUser.email}`));
+            
+            tasks = tasks.filter(task => task.id !== id);
+            localStorage.setItem(`tasks_${currentUser.email}`, JSON.stringify(tasks));
+            loadTasks();
+        }
+
+        // Filter tasks
+        function filterTasks(filter) {
+            loadTasks(filter);
+        }
+
+        // Clear completed tasks
+        function clearCompletedTasks() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            let tasks = JSON.parse(localStorage.getItem(`tasks_${currentUser.email}`));
+            tasks = tasks.filter(task => !task.completed);
+            localStorage.setItem(`tasks_${currentUser.email}`, JSON.stringify(tasks));
+            loadTasks();
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('currentUser');
+            toggleForms('login');
+        }
+
+        // Check if user is already logged in
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+            const user = JSON.parse(currentUser);
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${user.name}!`;
+            toggleForms('tasks');
+            loadTasks();
+        }
+    </script>
+</body>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabases } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAV5-63z40f9ZfuQyAo2C1OkONxXsV0APo",
+      authDomain: "task-management-app-df2d1.firebaseapp.com",
+      databaseURL: "https://task-management-app-df2d1-default-rtdb.firebaseio.com",
+      projectId: "task-management-app-df2d1",
+      storageBucket: "task-management-app-df2d1.firebasestorage.app",
+      messagingSenderId: "1086184373930",
+      appId: "1:1086184373930:web:6f578df8425d77c638dad3"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabases(app);
+  </script>
+</html>
